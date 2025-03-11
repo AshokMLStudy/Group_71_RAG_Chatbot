@@ -1,7 +1,7 @@
 streamlit
-pdfplumber
 sentence-transformers
 faiss-cpu
 transformers
 rank_bm25
 torch
+pickle5  # For pickle compatibility

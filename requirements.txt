@@ -4,4 +4,4 @@ faiss-cpu
 transformers
 rank_bm25
 torch
-pickle5  # For pickle compatibility
+pdfplumber  # For local PDF preprocessing

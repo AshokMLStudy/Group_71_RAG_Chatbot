@@ -1,15 +1,15 @@
 import streamlit as st
-import pdfplumber
 import numpy as np
 from sentence_transformers import SentenceTransformer
 import faiss
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from rank_bm25 import BM25Okapi
-import pickle
+import pickle  # Replace pickle5 with pickle
 import os
 
 # Preprocessing (run locally once, then upload preprocessed data)
 def preprocess_pdfs(pdf_paths, max_pages=5):
+    import pdfplumber  # Import here to avoid unnecessary dependency if not used
     text_chunks = []
     for pdf_path in pdf_paths:
         with pdfplumber.open(pdf_path) as pdf:
@@ -23,9 +23,9 @@ def preprocess_pdfs(pdf_paths, max_pages=5):
                         text_chunks.append(chunk)
     return text_chunks[:50]  # Limit to 50 chunks total
 
-# Load precomputed data (run this locally once, then upload pickle files)
+# Precompute and save (run locally)
 def precompute_and_save():
-    pdf_paths = ["msft-20230630_10k_2023.pdf", "msft-20240630_10k_2024.pdf"]
+    pdf_paths = ["tesla_10k_2023.pdf", "tesla_10k_2024.pdf"]
     chunks = preprocess_pdfs(pdf_paths)
     embedder = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings = embedder.encode(chunks, convert_to_tensor=False)

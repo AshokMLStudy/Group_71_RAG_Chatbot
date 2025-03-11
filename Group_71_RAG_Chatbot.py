@@ -82,7 +82,7 @@ def advanced_rag(query):
     # Stage 1: Coarse retrieval with BM25
     tokenized_query = query.split()
     bm25_scores = bm25.get_scores(tokenized_query)
-    coarse_indices = sorted(range(len(bm25_scores)), key=lambda i: bm25_scores[i], reverse=True)[:10]  # Reduced to 10
+    coarse_indices = sorted(range(len(bm25_scores)), key=lambda i: bm25_scores[i], reverse=True)[:10]
     coarse_chunks = [chunks[i] for i in coarse_indices]
     
     # Stage 2: Fine retrieval with embeddings
@@ -90,14 +90,16 @@ def advanced_rag(query):
     coarse_index = faiss.IndexFlatL2(embedder.get_sentence_embedding_dimension())
     coarse_index.add(coarse_embeddings)
     query_embedding = embedder.encode([query])
-    D, I = coarse_index.search(query_embedding, k=3)  # Reduced to 3
+    D, I = coarse_index.search(query_embedding, k=3)
     final_chunks = [coarse_chunks[i] for i in I[0]]
     
     # Generate response
     context = " ".join(final_chunks)
     input_text = f"Question: {query}\nContext: {context}\nAnswer:"
     inputs = tokenizer(input_text, return_tensors="pt", truncation=True, max_length=512)
-    outputs = model.generate(**inputs, max_length=100)  # Reduced max_length
+    
+    # Use max_new_tokens instead of max_length
+    outputs = model.generate(**inputs, max_new_tokens=50, do_sample=False)  # Generate up to 50 new tokens
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
     
     # Confidence score
